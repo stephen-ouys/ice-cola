@@ -1,0 +1,37 @@
+target/
+
+### eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.DS_Store
+
+target
+/.idea/
+/lib/
+/build
+*.swp
+/config
+
+
+jar
+
+
+.idea/

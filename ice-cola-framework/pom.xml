@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ice-cola-parent</artifactId>
+        <groupId>cn.stephen12.icecola</groupId>
+        <version>1.0.6-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ice-cola-framework</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>framework-core-model</module>
+        <module>framework-core-app</module>
+        <module>framework-core-domain</module>
+        <module>framework-core-infr</module>
+        <module>framework-core-exception</module>
+        <module>framework-archetype</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>framework-core-model</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>framework-core-exception</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>framework-core-domain</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>framework-core-app</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>framework-core-infr</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+</project>

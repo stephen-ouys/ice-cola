@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ice-cola-parent</artifactId>
+        <groupId>cn.stephen12.icecola</groupId>
+        <version>1.0.6-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ice-cola-components</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>component-dictionary</module>
+        <module>component-distributed</module>
+        <module>component-mock</module>
+        <module>component-office</module>
+        <module>component-op-log</module>
+        <module>component-utils</module>
+        <module>component-multi-tenant</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>ice-cola-framework</artifactId>
+                <version>${ice.cola.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>component-utils</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>component-dictionary</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>component-distributed</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>component-mock</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.stephen12.icecola</groupId>
+                <artifactId>component-office</artifactId>
+                <version>${ice.cola.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
