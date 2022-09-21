@@ -4,15 +4,20 @@ package cn.stephen12.icecola.framework.core.infr;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.ReflectUtil;
+import cn.stephen12.icecola.framework.core.domain.model.AfterDataInitializing;
 import cn.stephen12.icecola.framework.core.domain.model.BaseAggregateRoot;
 import cn.stephen12.icecola.framework.core.domain.model.BaseE;
 import cn.stephen12.icecola.framework.core.domain.model.BaseV;
 import cn.stephen12.icecola.framework.core.infr.datafiller.DataFiller;
 import cn.stephen12.icecola.framework.core.infr.model.IJpaEntity;
 import cn.stephen12.icecola.framework.core.infr.model.IdV;
+import com.alibaba.cola.domain.ApplicationContextHelper;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.TargetType;
+
+import javax.persistence.EntityManager;
 
 /**
  * 基础 Convertor
@@ -66,33 +71,23 @@ public interface IEntityConverter<D extends BaseAggregateRoot<D>, E extends IJpa
     }
 
     /**
-     * 带负载信息的转换器
+     * 调用目标对象方法
+     * @param target
+     */
+    @AfterMapping
+    default void defaultAfterMapping(@MappingTarget AfterDataInitializing target){
+        target.afterDataInitializing();
+    }
+
+    /**
+     * 从EntityManager中获取Entity，而非直接new
      *
      * @param <D>
      */
-    interface WithEntityPayload<D extends BaseAggregateRoot<D>, E extends IJpaEntity> extends IEntityConverter<D, E>{
-        /**
-         * 从JpaEntity 转换为BaseE的时候，传递负载信息
-         *
-         * @param jpaEntity
-         * @param domainEType
-         * @param <BE>
-         * @param <JE>
-         * @return
-         */
-        @ObjectFactory
-        default <BE extends BaseE, JE extends IJpaEntity> BE generateDomainE(JE jpaEntity, @TargetType Class<BE> domainEType) {
-            BE domainE = ReflectUtil.newInstance(domainEType);
-
-            final IJpaEntity payload =  ReflectUtil.newInstance(jpaEntity.getClass());
-            BeanUtil.copyProperties(jpaEntity, payload, CopyOptions.create().ignoreNullValue().ignoreError());
-
-            domainE.setPayload(payload);
-            return domainE;
-        }
+    interface WithEm<D extends BaseAggregateRoot<D>, E extends IJpaEntity> extends IEntityConverter<D, E> {
 
         /**
-         * 从JpaEntity 转换为BaseE的时候，传递负载信息
+         * 从BaseE 转换为JpaEntity的时候，从EntityManager 获取 JpaEntity
          *
          * @param domainE
          * @param jpaEntityType
@@ -102,10 +97,35 @@ public interface IEntityConverter<D extends BaseAggregateRoot<D>, E extends IJpa
          */
         @ObjectFactory
         default <JE extends IJpaEntity, BE extends BaseE> JE generateJpaEntity(BE domainE, @TargetType Class<JE> jpaEntityType) {
-            JE jpaEntity = ReflectUtil.newInstance(jpaEntityType);
-            Object payload =  domainE.getPayload();
-            BeanUtil.copyProperties(payload, jpaEntity, CopyOptions.create().ignoreError().ignoreNullValue());
-            return jpaEntity;
+            EntityManager em = ApplicationContextHelper.getBean(EntityManager.class);
+            JE jpaEntity = em.find(jpaEntityType, domainE.getId());
+            if (jpaEntity != null) {
+                // 不能传递原引用，因为Copy过程中Collection类型无法保证引用不变
+                return BeanUtil.toBean(jpaEntity,jpaEntityType);
+            }
+
+            return ReflectUtil.newInstance(jpaEntityType);
+        }
+
+        /**
+         * 从BaseV 转换为JpaEntity的时候，从EntityManager 获取
+         *
+         * @param valueObj
+         * @param jpaEntityType
+         * @param <BV>          BaseV子类
+         * @param <JE>
+         * @return
+         */
+        @ObjectFactory
+        default <JE extends IJpaEntity, BV extends BaseV> JE generateJpaEntity(BV valueObj, @TargetType Class<JE> jpaEntityType) {
+            EntityManager em = ApplicationContextHelper.getBean(EntityManager.class);
+            JE jpaEntity = em.find(jpaEntityType, valueObj.getId());
+            if (jpaEntity != null) {
+                // 不能传递原引用，因为Copy过程中Collection类型无法保证引用不变
+                return BeanUtil.toBean(jpaEntity,jpaEntityType);
+            }
+
+            return ReflectUtil.newInstance(jpaEntityType);
         }
 
     }
