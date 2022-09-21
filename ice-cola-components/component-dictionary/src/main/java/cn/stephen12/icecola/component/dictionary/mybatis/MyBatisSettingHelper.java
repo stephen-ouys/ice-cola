@@ -2,31 +2,41 @@ package cn.stephen12.icecola.component.dictionary.mybatis;
 
 import cn.stephen12.icecola.component.dictionary.DictionaryManager;
 import cn.stephen12.icecola.component.dictionary.autoconfig.DictionaryScannedHandlers;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
 
 /**
- * 序列化、反序列化器注册
+ * config MyBatis EnumTypeHandler
  *
  * @author ouyangsheng
- * @date 2022-03-17
+ * @date 2022-09-17
  **/
-@ConditionalOnBean(SqlSessionFactory.class)
+@Slf4j
+@ConditionalOnClass(SqlSessionFactory.class)
 @Component
-public class MyBatisSettingHelper implements DictionaryScannedHandlers.Handler {
-
-    @Autowired
-    private SqlSessionFactory sessionFactory;
+public class MyBatisSettingHelper extends ApplicationObjectSupport implements DictionaryScannedHandlers.Handler {
+    /**
+     * MyBatis TypeHandlerRegistry
+     */
+    private TypeHandlerRegistry typeHandlerRegistry;
 
     @Override
     public void handle(DictionaryManager dictionaryManager) {
+        SqlSessionFactory sqlSessionFactory = this.getApplicationContext().getBean(SqlSessionFactory.class);
+        if (sqlSessionFactory == null) {
+            log.warn("Miss bean SqlSessionFactory");
+            return;
+        }
+        this.typeHandlerRegistry = sqlSessionFactory.getConfiguration().getTypeHandlerRegistry();
         dictionaryManager.getAllEnums().stream().forEach(this::setting);
     }
 
     private void setting(Class<?> clazz) {
-        sessionFactory.getConfiguration().getTypeHandlerRegistry().register(clazz,MybatisEnumTypeHandler.class);
+        typeHandlerRegistry.register(clazz, MybatisEnumTypeHandler.class);
     }
 
 }
