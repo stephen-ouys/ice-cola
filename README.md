@@ -114,6 +114,11 @@
 8. EntityConverter 基于IJpaEntity转换，IJpaEntity移除非必要参数（仅保留Id)
 9. Dictionary 去除对MyBatis-Plus、Hibernate强依赖；只需要配置Dictionary扫包路径，不需再配置MyBatis-plus枚举扫包路径。
 
+### 1.1 (孵化中)
+1. 去掉Payload 从 EntityManager 中获取JpaEntity对象
+2. Fix: Dictionary MyBatisTypeHandler注册 bug.
+3. 干掉非通用性工具。
+
 ### TODO LIST
 1. enhanced-auditing 组件封装
 2. multi-tenancy-jpa 组件封装
