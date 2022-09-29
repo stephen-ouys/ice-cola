@@ -4,6 +4,7 @@ import cn.stephen12.icecola.component.dictionary.DictionaryManager;
 import cn.stephen12.icecola.component.dictionary.autoconfig.DictionaryScannedHandlers;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @author ouyangsheng
  * @date 2022-03-17
  **/
+@ConditionalOnClass(ParserConfig.class)
 @Component
 public class FastJsonSettingHelper implements DictionaryScannedHandlers.Handler {
 

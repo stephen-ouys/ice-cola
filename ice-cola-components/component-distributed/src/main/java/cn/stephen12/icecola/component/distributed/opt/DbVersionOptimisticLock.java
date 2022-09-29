@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -163,7 +164,7 @@ public class DbVersionOptimisticLock implements VersionOptimisticLock {
 
 
 }
-@ConditionalOnBean(EntityManager.class)
+@ConditionalOnClass(EntityManager.class)
 @Configuration
 @EnableJpaRepositories(basePackages = "cn.stephen12.icecola.component.distributed.opt")
 @EntityScan(basePackages = "cn.stephen12.icecola.component.distributed.opt")
