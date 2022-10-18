@@ -1,26 +1,34 @@
-# Some awesome components based on Cola
+# Ice Cola DDD架构文档 
 
 ## Overview
-本项目旨在依托DDD探索一条简便的开发之路，所以这里DDD是 Domain Drive Development, 而非 Domain Drive Design.
-## 核心组件
-1. core-adapter
+在实践过程中逐渐沉淀的 DDD 开发框架，延用了Alibaba Cola 的设计理念，
+集成 Spring Data( 主要是 JPA 和 Mongodb) 实现了主动充血和持久化能力，并封装了DDD的一些核心概念。 
+借鉴了Cola的命名，起名叫 Ice Cola, 意为：”冰可乐“，加倍的快乐!
 
+![Ice Cola 结构图](doc/img/ice_cola_framework.png)
+
+项目分成三部分：
+1. Ice Cola Framework
+2. Ice Cola Components 
+3. 业务系统的架构及规范
+## Ice-Cola Framework
+1. core-adapter
     未实现
 1. core-app 
-
     对AppService、CmdExecutor、CmdProcessor概念进行封装
 2. core-domain
-
     对 BaseAggregateRoot、BaseE、Gateway等盖帘进行封装
-3. core-infr
-
+3. core-infrastructure
     对 BaseGatewayImpl进行实现，实现了自动转换、自动充血、自动持久化等功能
+
+![Ice Cola 持久化逻辑](doc/img/ice_cola_persistence.png)
 4. core-exception
 
     对 业务异常进行了封装，实现了基本异常的处理器。
-## 增强组件
+## Ice-Cola Components
 - dictionary
-    摆脱枚举转换的烦恼
+    打通了 MyBatis、Hibernate、FastJson、HuTool 等常用框架，
+    让你摆脱枚举转换的烦恼；提供统一的枚举接口；未来可支持动态枚举。
     
 - mock
     在接口完成开发之前，提供mock数据给前端
@@ -32,13 +40,16 @@
     分布式锁、限流、防重、幂等等工具能力
     
 - utils
-    自己封装的工具类，及基于Hutool的工具类增强
+    在 HuTool 的基础上，拓展了如数学集合运算，数轴运算，校验规则集，
+    ClassUtil 等工具。
+    
+- Op Log
+    操作日志组件，支持采集当前操作(事务型）前后数据变化及行为描述，
+    并整理成半格式化数据同步指日志服务。
 
-- framework-archetype
-    项目模板 （ 未实现 ）
-## 开发规范
+## 业务系统结构及规范
 
-![核心模块结构示意图](doc/img/核心模块结构.png)
+![ice cola framework.png](doc/img/ice_cola_framework.png)
 
 ### Adapter 层
 1. Adapter 层要维护Application所需的登录、权限等信息。
@@ -47,6 +58,11 @@
 3. Controller 命名为 XxControllerForApp、XxControllerForOpenApi
 4. 请求适配器命名为 XxRequestAdapter 如 PlaceOrderRequestAdapter
 
+![ice cola framework.png](doc/img/CQRS_and_concepts.png)
+上图为CQRS模式对应 各层的逻辑关系
+
+### Query 层
+目的是将查询从Domain中分割出来
 
 ### Application 层
 1. Application目的是做编排、控制及应用层面内聚。
@@ -103,7 +119,7 @@
 4. 优化及修复CoreExceptionHandler
 5. 请求级别缓存实现 RequestContextCacheManager
 
-### 1.0.6 (孵化中)
+### 1.0.6
 1. Gateway增加remove方法；
 2. Gateway增加发布事件忽略异常方法
 3. LocalDateTimeToLongConverter、LocalDateToLongConverter
@@ -120,17 +136,11 @@
 3. 干掉非通用性工具。
 
 ### TODO LIST
-1. enhanced-auditing 组件封装
-2. multi-tenancy-jpa 组件封装
-
-~~3. LocalDateTimeToLongConverter、LocalDateToLongConverter~~
-
-4. archetype
-5. Excel 导入导出
-6. PDF 处理
-7. MQ 整合Event
-8. 想办法干掉Payload
-9. repository 大量数据异步请求
-10. 业务日志框架
-11. 多租户
-12. 因为version 领域不能多次Save的问题(可以用AOP主动Save后发event，保证只调一次Save)
+- enhanced-auditing 组件封装
+- archetype
+- Excel 导入导出
+- PDF 处理
+- MQ 整合Event
+- repository 大量数据异步请求
+- 业务日志框架
+- 多租户组件

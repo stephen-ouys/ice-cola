@@ -69,15 +69,20 @@ public class MergedDataFillStrategy implements DataFillStrategy, FindAggregateRo
         //拿到所有被缓存的类型，统一调接口
         Set<Class> cachedVTypes = mergeCache.getCachedVTypes();
         for (Class vType : cachedVTypes) {
-            //拿到所有Id取掉 findByIds 方法
-            Map<Long, Object> idToInstanceMap = mergeCache.getIdToInstanceMap(vType);
+
+            //拿到所有Id去调 findByIds 方法
+            Set<Long> instanceIdSet = mergeCache.getInstanceIdSet(vType);
+            List<Object> instances = mergeCache.getInstances(vType);
+
+            //查询结果
             RepositoryWrapper repository = DataFiller.getRepository(vType);
-            List<? extends BaseV> results = repository.findByIds(idToInstanceMap.keySet());
+            Map<Long, Object> results = (Map<Long, Object>) repository.findByIds(instanceIdSet).stream()
+                    .collect(Collectors.toMap(this::getId, Function.identity(), (pre, curr) -> pre));
 
             //将结果反Copy 回实例
-            for (Object obj : results) {
-                Object target = idToInstanceMap.get(getId(obj));
-                BeanUtil.copyProperties(obj, target, CopyOptions.create().ignoreNullValue().ignoreError());
+            for (Object inst : instances) {
+                Object source = results.get(getId(inst));
+                BeanUtil.copyProperties(source, inst, CopyOptions.create().ignoreNullValue().ignoreError());
             }
         }
 
@@ -159,16 +164,24 @@ public class MergedDataFillStrategy implements DataFillStrategy, FindAggregateRo
 
 
         /**
-         * 获取指定类型 Id-> Instance 的映射
+         * 获取指定类型 的 Instances
          *
          * @param vType
          * @return
          */
-        Map<Long, Object> getIdToInstanceMap(Class vType) {
-            List<Object> instances = this.vTypeToInstancesMap.get(vType);
-            return instances.stream().collect(Collectors.toMap(i -> ((BaseV) i).getId(), Function.identity(), (pre, curr) -> pre));
+        List<Object> getInstances(Class vType) {
+            return this.vTypeToInstancesMap.get(vType);
         }
 
+        /**
+         * 获取指定类型 的 Id集合
+         *
+         * @param vType
+         * @return
+         */
+        Set<Long> getInstanceIdSet(Class vType) {
+            return this.vTypeToInstancesMap.get(vType).stream().map(v -> getId(v)).collect(Collectors.toSet());
+        }
 
         /**
          * 清理掉全部缓存
